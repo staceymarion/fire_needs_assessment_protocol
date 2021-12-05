@@ -6,7 +6,7 @@ library(tidyverse)
 library(readr)
 library(ggplot2)
 
-bps <- read_csv("d:\\wi200bps.csv") # csv is exported attribute table from the wisconsin BpS raster layer
+bps <- read_csv("G:\\fnaExternal\\wiBPS.csv") # csv is exported attribute table from the wisconsin BpS raster layer
 
 # Part 1 - Area summaries and historical fire regimes
 
@@ -25,20 +25,20 @@ bpsOrder <- bps %>%
 print(bpsOrder)
 
 # Calculate counts by BpS using our sorted dataset
-bpsClean <- bpsOrder %>% 
-  group_by(BPS_NAME) %>% 
-  summarise(BPS_CODE = first(BPS_CODE), COUNT = sum(COUNT), area = sum(COUNT)*30*30, acres = sum(COUNT)*30*30/4046.86, perArea = sum(p), FRI_ALLFIR = first(FRI_ALLFIR), annual = acres/FRI_ALLFIR, PRC_REPLAC = first(PRC_REPLAC), annRep = annual*PRC_REPLAC, GROUPVEG = first(GROUPVEG)) %>%   ## 30x30 M resolution. 1 acre = 4046.86 sqm Output = acres
-  arrange(desc(area))
-bpsClean <- bpsClean %>% mutate_if(is.numeric, list(~na_if(., Inf))) %>% replace(is.na(.), 0) # get rid of values calculated as Inf (value/0 = Inf)
-print(bpsClean)
-write_csv(bpsClean, "d:\\wiBpsSummarized.csv")
+# bpsClean <- bpsOrder %>% 
+#   group_by(BPS_NAME) %>% 
+#   summarise(BPS_CODE = first(BPS_CODE), COUNT = sum(COUNT), area = sum(COUNT)*30*30, acres = sum(COUNT)*30*30/4046.86, perArea = sum(p), FRI_ALLFIR = first(FRI_ALLFIR), annual = acres/FRI_ALLFIR, PRC_REPLAC = first(PRC_REPLAC), annRep = annual*PRC_REPLAC, GROUPVEG = first(GROUPVEG)) %>%   ## 30x30 M resolution. 1 acre = 4046.86 sqm Output = acres
+#   arrange(desc(area))
+# bpsClean <- bpsClean %>% mutate_if(is.numeric, list(~na_if(., Inf))) %>% replace(is.na(.), 0) # get rid of values calculated as Inf (value/0 = Inf)
+# print(bpsClean)
+# write_csv(bpsClean, "d:\\wiBpsSummarized.csv")
 
 # Select bps name row with the highest count; use for FRI information ** So, using most abundant bps--zone row for FRI. This is preferable to averaging or selecting just a single zone
 bpsFRI <- bps %>% 
   group_by(BPS_NAME) %>% 
   slice(which.max(COUNT))
 print(bpsFRI)
-write_csv(bpsFRI, "d:\\wi200bpsFRI.csv")
+write_csv(bpsFRI, "G:\\fnaExternal\\wibpsFRI.csv")
 
 # Take a look at just the top 10 most common BpS's i.e. historical vegetation conditions 
 bps10 <- bpsClean %>% slice (1:10) %>% 

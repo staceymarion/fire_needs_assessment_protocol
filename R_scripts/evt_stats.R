@@ -6,7 +6,7 @@ library(tidyverse)
 library(readr)
 library(ggplot2)
 
-evt <- read_csv("d:\\wiModifiedEvt.csv") # csv is exported attribute table from the modified wisconsin EVT raster layer
+evt <- read_csv("G:\\fnaExternal\\wiModEvtD.csv") # csv is exported attribute table from the modified wisconsin EVT raster layer
 
 # create variable p as percent of total count, per row
 evt$sum <- sum(evt$Count)
@@ -60,7 +60,7 @@ evtGroup <- evtGroup %>%
   summarise(area = sum(Count)*30*30, acres = sum(Count)*30*30/4046.86, perArea = sum(p)) %>%   ## 30x30 M resolution. 1 acre = 4046.86 sqm Output = acres
   arrange(desc(area))
 print(evtGroup)
-write_csv(evtGroup, "d:\\evtgroup.csv")
+write_csv(evtGroup, "d:\\evtAgroup.csv")
 
 evt10 <- evtGroup %>% slice (1:10)
 

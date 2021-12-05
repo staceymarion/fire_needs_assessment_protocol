@@ -5,7 +5,7 @@ library(tidyverse)
 library(readr)
 library(ggplot2)
 
-final <- read_csv("d:\\wiModifiedEvt.csv") # final fire dependent vegetation areas  (joinAug10.csv = export from raster.  new evt classification, joined with all evt, bps attributes + count data)
+final <- read_csv("G:\\fnaExternal\\wiModifiedEvt_1.csv") # unmodified fire dependent vegetation areas  (joinAug10.csv = export from raster.  new evt classification, joined with all evt, bps attributes + count data)
 
 # create variable p as percent of total count, per row
 final$sum <- sum(final$Count)
@@ -17,13 +17,14 @@ head(final$p)
 
 # Calculate annual burning needs
 
-# annualAll ~ based on mean FRI (FRI_ALLFIR), expected annual burning needs (units = acres)
+# annualAll ~ based on mean FRI (FRI_ALLFIR), expected annual burning needs (units = acres). note = no generalization
 
 finalFRI <- final %>% 
   group_by(EVT_NAME) %>% 
-  summarise(WI_Nat_Comm, area = sum(Count)*30*30, acres = sum(Count)*30*30/4046.86, FRI_ALLFIR_1, annualALL = (acres/FRI_ALLFIR_1), FRI_REPLAC_1, PRC_REPLAC_1, annualREPLAC = (annualALL*PRC_REPLAC_1/100), FRI_MIXED_1, PRC_MIXED_1, annualMIXED = (annualALL*PRC_MIXED_1/100), FRI_SURFAC_1, PRC_SURFAC_1, annualSURFAC = (annualALL*PRC_SURFAC_1/100)) %>%   
+  summarise(WI_Nat_Com, area = sum(Count)*30*30, acres = sum(Count)*30*30/4046.86, FRI_ALLFIR, annualALL = (acres/FRI_ALLFIR), FRI_REPLAC, PRC_REPLAC, annualREPLAC = (annualALL*PRC_REPLAC/100), FRI_MIXED_, PRC_MIXED_, annualMIXED = (annualALL*PRC_MIXED_/100), FRI_SURFAC, PRC_SURFAC, annualSURFAC = (annualALL*PRC_SURFAC/100)) %>%   
   arrange(desc(annualALL))
-finalFRI <- finalFRI %>% mutate_if(is.numeric, list(~na_if(., Inf))) %>% replace(is.na(.), 0) # remove Inf (0/Value; replace with 0)
+finalFRI <- finalFRI %>% mutate_if(is.numeric, list(~na_if(., Inf))) 
+finalFRI <- finalFRI %>% mutate_if(is.numeric, ~replace(., is.na(.), 0)) #replace(is.na(.), 0) # remove Inf (0/Value; replace with 0)
 finalFRI <- finalFRI %>% arrange(desc(annualALL)) # re-sort 
 print(finalFRI)
 
